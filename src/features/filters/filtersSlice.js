@@ -1,8 +1,12 @@
+export const StatusFilters = {
+  All: 'all',
+  Active: 'active',
+  Completed: 'completed',
+}
+
 const initialState = {
-  filters: {
-    status: 'All',
-    colors: [],
-  },
+  status: StatusFilters.All,
+  colors: [],
 }
 
 export default function filtersReducer(state = initialState, action) {
@@ -12,6 +16,35 @@ export default function filtersReducer(state = initialState, action) {
         // Again, one less level of nesting to copy
         ...state,
         status: action.payload,
+      }
+    }
+    case 'filters/colorFilterChanged': {
+      const { color, changeType } = action.payload
+      const { colors } = state
+
+      switch (changeType) {
+        case 'added': {
+          if (colors.includes(color)) {
+            return state
+          }
+
+          return {
+            ...state,
+            colors: colors.concat(color),
+          }
+        }
+
+        case 'removed': {
+          return {
+            ...state,
+            colors: state.colors.filter(
+              (existingColor) => existingColor !== color
+            ),
+          }
+        }
+
+        default:
+          return state
       }
     }
     default:
